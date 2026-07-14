@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סימולציית קינטיקת אנזים קואופרטיבי</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .slider-row {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: #9b59b6;
+        }
+        
+        .readout {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .stats-card div {
+            margin-bottom: 8px;
+        }
+        
+        .stats-card strong {
+            font-size: 18px;
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: #fafbfc;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .formula {
+            background: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #34495e;
+            margin-top: 2rem;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-right: 4px solid #3498db;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        .info-box strong {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 סימולציית קינטיקת אנזים קואופרטיבי דימרי</h1>
+        <p class="subtitle">שנו את הפרמטרים וצפו בהשפעה על עקומת התגובה</p>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="slider-row">
+                    <label>K₁ = <span id="K1val">1.00</span> mM</label>
+                    <input type="range" id="K1" min="0.1" max="5" step="0.1" value="1">
+                    <div class="readout">קבוע קישור הסובסטרט הראשון</div>
+                </div>
+
+                <div class="slider-row" style="border-left-color: #9b59b6;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="logScale" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span>סולם לוגריתמי (ציר X)</span>
+                    </label>
+                    <div class="readout">מאפשר ראיית הנמוכים והגבוהים בו-זמנית</div>
+                </div>
+                
+                <div class="slider-row">
+                    <label>K₂/K₁ = <span id="K2ratval">0.10</span> (K₂ = <span id="K2val">0.10</span> mM)</label>
+                    <input type="range" id="K2ratio" min="0.01" max="100" step="0.01" value="0.1">
+                    <div class="readout" id="coop-text">קואופרטיביות חזקה — ES₂ נוצר בקלות</div>
+                </div>
+                
+                <div class="slider-row">
+                    <label>kcat₂/kcat₁ = <span id="kcatrval">1.0</span></label>
+                    <input type="range" id="kcatr" min="0.1" max="3" step="0.1" value="1">
+                    <div class="readout"><span id="kcat-text">kcat₁ = 1.00 s⁻¹, kcat₂ = 1.00 s⁻¹</span></div>
+                </div>
+                
+                <div class="slider-row">
+                    <label>[E]₀ = <span id="E0val">1.0</span> μM</label>
+                    <input type="range" id="E0" min="0.1" max="5" step="0.1" value="1">
+                    <div class="readout">ריכוז אנזים כולל</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div>V<sub>max</sub> = <strong id="vmaxtext">1.000</strong> μM/s</div>
+                    <div>[S]₁/₂ = <strong id="halfmaxtext">0.32</strong> mM</div>
+                    <div>Hill coefficient: <strong id="hilltext">n ≈ 2</strong></div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+        
+        <div class="formula">
+            <strong>נוסחה:</strong> v = [E]₀ · (kcat₁·[S]/K₁ + kcat₂·[S]²/(K₁K₂)) / (1 + [S]/K₁ + [S]²/(K₁K₂))
+        </div>
+        
+        <div class="info-box">
+            <strong>💡 טיפים לשימוש:</strong><br>
+            • הנמך את K₂/K₁ ל-0.05 לראות קואופרטיביות חזקה (עקומה חדה - n≈2)<br>
+            • הרם את K₂/K₁ ל-1-2 לראות Michaelis-Menten רגיל (עקומה עגולה)<br>
+            • הרם את K₂/K₁ ל-50 לראות אנטי-קואופרטיביות (ES עדיף על ES₂)<br>
+            • תשימו לב איך rV_max נשאר קבוע לעומת השינויים בצורת העקומה<br>
+            • השווה בין טיפוס פרא (K₂ קטן) לבין מוטנט (K₂ גדול)
+        </div>
+    </div>
+
+    <script>
+        const K1input = document.getElementById('K1');
+        const K2input = document.getElementById('K2ratio');
+        const kcatrInput = document.getElementById('kcatr');
+        const E0input = document.getElementById('E0');
+        const logScaleCheckbox = document.getElementById('logScale');
+
+        const K1val = document.getElementById('K1val');
+        const K2ratval = document.getElementById('K2ratval');
+        const K2val = document.getElementById('K2val');
+        const E0val = document.getElementById('E0val');
+        const kcatrval = document.getElementById('kcatrval');
+        const kcatText = document.getElementById('kcat-text');
+        const coopText = document.getElementById('coop-text');
+        const vmaxtext = document.getElementById('vmaxtext');
+        const halfmaxtext = document.getElementById('halfmaxtext');
+        const hilltext = document.getElementById('hilltext');
+
+        let chart = null;
+
+        function calculateVelocity(S, K1, K2, kcat1, kcat2, E0) {
+            const denom = 1 + (S/K1) + (S*S)/(K1*K2);
+            const numer = (kcat1*(S/K1) + kcat2*(S*S)/(K1*K2)) * E0;
+            return numer / denom;
+        }
+
+        function updateChart() {
+            const K1 = parseFloat(K1input.value);
+            const K2ratio = parseFloat(K2input.value);
+            const K2 = K1 * K2ratio;
+            const kcatr = parseFloat(kcatrInput.value);
+            const kcat1 = 1;
+            const kcat2 = kcat1 * kcatr;
+            const E0 = parseFloat(E0input.value);
+            
+            K1val.textContent = K1.toFixed(2);
+            K2ratval.textContent = K2ratio.toFixed(2);
+            K2val.textContent = K2.toFixed(2);
+            E0val.textContent = E0.toFixed(1);
+            kcatrval.textContent = kcatr.toFixed(1);
+            kcatText.textContent = `kcat₁ = ${kcat1.toFixed(2)} s⁻¹, kcat₂ = ${kcat2.toFixed(2)} s⁻¹`;
+            
+            if (K2ratio < 0.2) {
+                coopText.textContent = 'קואופרטיביות חזקה — ES₂ נוצר בקלות';
+                hilltext.textContent = 'n ≈ 2 (חזקה מאוד)';
+            }
+            else if (K2ratio <= 0.5) {
+                coopText.textContent = 'קואופרטיביות בינונית';
+                hilltext.textContent = 'n ≈ 1.5 (בינונית)';
+            }
+            else if (K2ratio <= 2) {
+                coopText.textContent = 'אפיניויות דומות — Michaelis-Menten רגיל';
+                hilltext.textContent = 'n ≈ 1 (ללא קואופרטיביות)';
+            }
+            else if (K2ratio <= 20) {
+                coopText.textContent = 'אנטי-קואופרטיביות חלשה — ES עדיף על ES₂';
+                hilltext.textContent = 'n < 1 (חלש)';
+            }
+            else {
+                coopText.textContent = 'אנטי-קואופרטיביות חזקה — ES₂ כמעט לא נוצר';
+                hilltext.textContent = 'n << 1 (חזק מאוד)';
+            }
+            
+            const Vmax = kcat2 * E0;
+            const halfmax = Math.sqrt(K1 * K2);
+            
+            vmaxtext.textContent = Vmax.toFixed(3);
+            halfmaxtext.textContent = halfmax.toFixed(2);
+            
+            const maxS = Math.max(K1, K2) * 10;
+            const data = [];
+            const isLogScale = logScaleCheckbox.checked;
+            
+            if (isLogScale) {
+                // סולם לוגריתמי: התחל מ-0.001 עד maxS
+                const minS = 0.001;
+                for (let i = 0; i <= 100; i++) {
+                    const S = Math.pow(10, Math.log10(minS) + (i / 100) * (Math.log10(maxS) - Math.log10(minS)));
+                    const v = calculateVelocity(S, K1, K2, kcat1, kcat2, E0);
+                    data.push({ x: parseFloat(S.toFixed(4)), y: parseFloat(v.toFixed(4)) });
+                }
+            } else {
+                // סולם ליניארי
+                for (let i = 0; i <= 100; i++) {
+                    const S = (i / 100) * maxS;
+                    const v = calculateVelocity(S, K1, K2, kcat1, kcat2, E0);
+                    data.push({ x: parseFloat(S.toFixed(2)), y: parseFloat(v.toFixed(4)) });
+                }
+            }
+            
+            if (chart) {
+                chart.data.labels = data.map(d => d.x);
+                chart.data.datasets[0].data = data.map(d => d.y);
+                chart.options.scales.x.type = logScaleCheckbox.checked ? 'logarithmic' : 'linear';
+                chart.update();
+            } else {
+                const ctx = document.getElementById('chart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        labels: data.map(d => d.x),
+                        datasets: [{
+                            label: 'v([S])',
+                            data: data.map(d => d.y),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                            showLine: true,
+                            tension: 0.4,
+                            fill: false,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                type: logScaleCheckbox.checked ? 'logarithmic' : 'linear',
+                                position: 'bottom',
+                                title: { 
+                                    display: true, 
+                                    text: logScaleCheckbox.checked ? '[S] (mM, סולם לוגריתמי)' : '[S] (mM)',
+                                    font: { size: 12, weight: 'bold' },
+                                    color: '#2c3e50'
+                                },
+                                ticks: { color: '#7f8c8d', font: { size: 11 } },
+                                grid: { color: '#ecf0f1' }
+                            },
+                            y: {
+                                title: { 
+                                    display: true, 
+                                    text: 'v (μM/s)',
+                                    font: { size: 12, weight: 'bold' },
+                                    color: '#2c3e50'
+                                },
+                                ticks: { color: '#7f8c8d', font: { size: 11 } },
+                                grid: { color: '#ecf0f1' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        K1input.addEventListener('input', updateChart);
+        K2input.addEventListener('input', updateChart);
+        kcatrInput.addEventListener('input', updateChart);
+        E0input.addEventListener('input', updateChart);
+        logScaleCheckbox.addEventListener('change', updateChart);
+
+        updateChart();
+    </script>
+</body>
+</html>
