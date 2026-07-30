@@ -70,7 +70,7 @@ input,button,select,textarea{font-family:inherit;font-size:inherit}
 .start-card p{font-size:14px;color:var(--text2);line-height:1.55;margin-bottom:16px}
 .date-bar{display:flex;align-items:center;gap:10px}
 .date-bar label{font-size:14px;color:var(--text2);font-weight:600;white-space:nowrap}
-.date-input{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:12px 14px;color:var(--text);font-size:16px;text-align:center;outline:none;-webkit-appearance:none;transition:.15s}
+.date-input{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:12px 14px;color:var(--text);font-size:16px;text-align:center;outline:none;-webkit-appearance:none;appearance:none;transition:.15s}
 .date-input:focus{border-color:var(--accent)}
 .primary-btn{width:100%;padding:15px;margin-top:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(157,108,245,.32);letter-spacing:.5px}
 .primary-btn:active{transform:scale(.98)}
@@ -78,7 +78,7 @@ input,button,select,textarea{font-family:inherit;font-size:inherit}
 
 /* WORKOUT TOP BAR */
 .wk-top{display:flex;align-items:center;gap:10px;padding:8px 16px 4px}
-.wk-date{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:10px 12px;color:var(--text);font-size:15px;text-align:center;outline:none;-webkit-appearance:none}
+.wk-date{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:10px 12px;color:var(--text);font-size:15px;text-align:center;outline:none;-webkit-appearance:none;appearance:none}
 .wk-date:focus{border-color:var(--accent)}
 .wk-discard{background:none;border:1px solid var(--bg4);color:var(--text3);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .wk-discard:active{border-color:var(--red);color:var(--red)}
@@ -108,7 +108,7 @@ input,button,select,textarea{font-family:inherit;font-size:inherit}
 .sets-head span{font-size:11px;color:var(--text3);font-weight:600;text-align:center;letter-spacing:.3px}
 .set-row{display:flex;align-items:center;gap:6px;margin-top:8px}
 .set-num{min-width:24px;font-size:13px;color:var(--text3);font-weight:700;text-align:center}
-.set-input{flex:1;min-width:0;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:11px 8px;color:var(--text);font-size:16px;text-align:center;outline:none;-webkit-appearance:none;transition:.15s}
+.set-input{flex:1;min-width:0;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;padding:11px 8px;color:var(--text);font-size:16px;text-align:center;outline:none;-webkit-appearance:none;appearance:none;transition:.15s}
 .set-input:focus{border-color:var(--accent)}
 .set-input::placeholder{color:var(--text3)}
 .set-notes-input{flex:2;min-width:0;text-align:right;font-size:14px}
@@ -162,11 +162,36 @@ input,button,select,textarea{font-family:inherit;font-size:inherit}
 .hist-ex{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
 .hist-ex:last-child{border-bottom:none}
 .hist-ex-name{font-size:15px;font-weight:700}
-.hist-ex-name .he-var{color:var(--accent);font-weight:600;font-size:13px}
-.hist-ex-plan{font-size:12px;color:var(--text3);margin-top:1px}
-.hist-set{font-size:14px;color:var(--text2);margin-top:5px;line-height:1.6}
-.hist-set b{color:var(--text);font-weight:700}
 .hist-note{color:var(--text3);font-style:italic;font-size:12px}
+
+/* Numeric tokens must be isolated: inside an RTL paragraph "60×8" otherwise
+   reorders to "8×60" and silently swaps weight with reps. */
+.num{direction:ltr;unicode-bidi:isolate}
+
+/* --- compact two-line history exercise --- */
+.hist-ex-name .he-plan{color:var(--text3);font-weight:500;font-size:12.5px}
+.hist-sets{font-size:14px;color:var(--text2);margin-top:4px;line-height:1.7}
+.hist-sets .hs-sep{color:var(--text3);padding:0 1px}
+.hist-sets .hs-unit{color:var(--text3);font-size:12px}
+.hist-none{color:var(--text3)}
+
+/* --- month grouping --- */
+.hist-month{margin:16px 16px 6px;padding:11px 15px;background:var(--bg3);border:1px solid var(--bg4);border-radius:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.hist-month:active{background:var(--bg4)}
+.hist-month-title{font-size:15px;font-weight:800;color:var(--accent)}
+.hist-month-meta{font-size:12px;color:var(--text3);margin-top:1px}
+.hist-month-chevron{color:var(--text3);font-size:15px}
+
+/* --- previous-performance modal --- */
+.ex-hist-btn{background:var(--bg3);border:1px solid var(--bg4);color:var(--accent);font-size:15px;cursor:pointer;padding:4px 9px;border-radius:9px;line-height:1.4}
+.ex-hist-btn:active{background:var(--bg4)}
+.pp-session{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.pp-session:last-child{border-bottom:none}
+.pp-date{font-size:14px;font-weight:700;color:var(--accentBright);display:flex;align-items:center;gap:8px}
+.pp-tag{background:rgba(52,211,153,.13);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:50px}
+.pp-plan{font-size:12.5px;color:var(--text3);margin-top:3px;line-height:1.5}
+.pp-set{font-size:14px;color:var(--text2);margin-top:5px;display:flex;align-items:baseline;gap:8px}
+.pp-set-n{min-width:20px;height:20px;border-radius:6px;background:var(--bg3);color:var(--text3);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* SETTINGS */
 .set-section{padding:8px 16px}
@@ -316,6 +341,15 @@ function fmtDate(d){
   return p[2]+"."+p[1]+"."+p[0]+" · יום "+days[dt.getDay()];
 }
 
+var HEB_MONTHS=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+// "2026-07" -> "יולי 2026"
+function monthLabel(key){
+  var p = String(key||"").split("-");
+  var mi = parseInt(p[1],10)-1;
+  if(p.length<2 || isNaN(mi) || mi<0 || mi>11) return "ללא תאריך";
+  return HEB_MONTHS[mi]+" "+p[0];
+}
+
 // Find the most recent previous performance of an exercise (by id), excluding current workout.
 function getLastPerf(exId, workouts, excludeWid){
   for(var i=0;i<workouts.length;i++){
@@ -327,6 +361,19 @@ function getLastPerf(exId, workouts, excludeWid){
     if(match) return { date:w.date, type:match.type, sets:match.sets };
   }
   return null;
+}
+// All past performances of an exercise, newest first (excludes the current workout).
+// Used by the "previous times" modal so the user can scroll back through sessions.
+function getPerfHistory(exId, workouts, excludeWid){
+  var out = [];
+  (workouts||[]).forEach(function(w){
+    if(w.id===excludeWid) return;
+    var m = (w.exercises||[]).find(function(e){
+      return e.exId===exId && (e.sets||[]).some(function(s){ return s.value||s.reps||s.notes; });
+    });
+    if(m) out.push({date:w.date, type:m.type, variation:m.variation, repRange:m.repRange, notes:m.notes, sets:m.sets});
+  });
+  return out;
 }
 function summarizeSets(sets, type){
   return (sets||[]).filter(function(s){ return s.value||s.reps; }).map(function(s){
@@ -413,6 +460,8 @@ function App(){
   const [showAddEx, setShowAddEx] = useState(false);
   const [saveStatus, setSaveStatus] = useState("saved"); // saving | saved | error
   const [openHist, setOpenHist] = useState({});
+  const [openMonths, setOpenMonths] = useState({});   // history collapsed by month
+  const [perfModal, setPerfModal] = useState(null);   // {exId, name} for previous-times modal
   const [catOpen, setCatOpen] = useState(false);
   const [progExId, setProgExId] = useState(null);   // selected exercise for progress chart
   const [progMetric, setProgMetric] = useState("1rm"); // "1rm" | "weight"
@@ -648,10 +697,12 @@ function App(){
 
             {active.exercises.map((ex, ei) => {
               var lp = getLastPerf(ex.exId, workouts, active.id);
+              var hasHist = !!lp;
               return <div className="ex-card" key={ex._k}>
                 <div className="ex-head">
                   <span className={"ex-type-tag "+ex.type}>{ex.type==="time"?"זמן":"משקל"}</span>
                   <div className="ex-title">{ex.name}</div>
+                  {hasHist && <button className="ex-hist-btn" title="פעמים קודמות" aria-label="פעמים קודמות" onClick={()=>setPerfModal({exId:ex.exId, name:ex.name})}>🕘</button>}
                   <button className="ex-remove" onClick={()=>removeExercise(ei)}>✕</button>
                 </div>
                 <div className="ex-plan">
@@ -712,7 +763,26 @@ function App(){
         </div>
         {!workouts.length ? (
           <div className="empty"><div className="empty-icon">📋</div><div className="e-title">עדיין אין אימונים שמורים</div><div>סיימי אימון ראשון והוא יופיע כאן</div></div>
-        ) : workouts.map(function(w){
+        ) : (function(){
+          // workouts arrive newest-first, so months come out newest-first too.
+          var months = [], byKey = {};
+          workouts.forEach(function(w){
+            var key = String(w.date||"").slice(0,7);
+            if(!byKey[key]){ byKey[key] = {key:key, items:[]}; months.push(byKey[key]); }
+            byKey[key].items.push(w);
+          });
+          return months.map(function(mg, mi){
+            // newest month starts open; the rest collapsed until tapped.
+            var openM = (openMonths[mg.key] !== undefined) ? openMonths[mg.key] : (mi===0);
+            return <div key={mg.key}>
+              <div className="hist-month" onClick={()=>setOpenMonths(p=>Object.assign({},p,{[mg.key]: !openM}))}>
+                <div>
+                  <div className="hist-month-title">{monthLabel(mg.key)}</div>
+                  <div className="hist-month-meta">{mg.items.length+" אימונים"}</div>
+                </div>
+                <span className="hist-month-chevron">{openM?"▾":"◂"}</span>
+              </div>
+              {openM && mg.items.map(function(w){
           var open = openHist[w.id];
           var exCount = (w.exercises||[]).length;
           return <div className="hist-card" key={w.id}>
@@ -729,20 +799,22 @@ function App(){
             </div>
             {open && <div className="hist-body">
               {(w.exercises||[]).map(function(ex, i){
+                // line 1: name + the plan for that exercise. line 2: every set, condensed.
+                var plan = [ex.variation, ex.repRange ? "יעד "+ex.repRange : "", ex.notes].filter(Boolean).join(" · ");
                 return <div className="hist-ex" key={i}>
-                  <div className="hist-ex-name">{ex.name}{ex.variation && <span className="he-var">{" · "+ex.variation}</span>}</div>
-                  {(ex.repRange||ex.notes) && <div className="hist-ex-plan">{[ex.repRange?"יעד "+ex.repRange:"", ex.notes].filter(Boolean).join(" · ")}</div>}
-                  {(ex.sets||[]).filter(function(s){return s.value||s.reps||s.notes;}).map(function(s, si){
-                    return <div className="hist-set" key={si}>
-                      <b>{si+1}.</b> {s.value?(ex.type==="time"?s.value:s.value+" ק״ג"):""}{s.reps?" × "+s.reps:""}
-                      {s.notes && <span className="hist-note">{"  — "+s.notes}</span>}
-                    </div>;
-                  })}
+                  <div className="hist-ex-name">
+                    {ex.name}
+                    {plan && <span className="he-plan">{" · "+plan}</span>}
+                  </div>
+                  <div className="hist-sets"><SetLine sets={ex.sets} type={ex.type}/></div>
                 </div>;
               })}
             </div>}
           </div>;
-        })}
+              })}
+            </div>;
+          });
+        })()}
       </div>}
 
       {/* ===== PROGRESS ===== */}
@@ -822,6 +894,13 @@ function App(){
         onPick={addExerciseToWorkout}
         onCreate={(name,type)=>createExercise(name,type,true)}
         onClose={()=>setShowAddEx(false)}
+      />}
+
+      {/* ===== PREVIOUS PERFORMANCE MODAL ===== */}
+      {perfModal && <PrevPerfModal
+        exName={perfModal.name}
+        history={getPerfHistory(perfModal.exId, workouts, active ? active.id : null)}
+        onClose={()=>setPerfModal(null)}
       />}
 
       {/* ===== FINISH BAR ===== */}
@@ -941,6 +1020,64 @@ function ProgressChart({series, type, metric, exName}){
     {metric==="1rm" && <div className="chart-hint" style={{marginTop:12}}>
       "חוזק" מחושב כאומדן 1RM (משקל מירבי לחזרה אחת) מתוך המשקל והחזרות של הסט הטוב ביותר באימון — כך גם עלייה במשקל וגם עלייה בחזרות נספרות כהתקדמות.
     </div>}
+  </div>;
+}
+
+// ---- One compact, bidi-safe line holding every set of an exercise ----
+function SetLine({sets, type}){
+  var list = (sets||[]).filter(function(s){ return s.value||s.reps||s.notes; });
+  if(!list.length) return <span className="hist-none">—</span>;
+  return <span>
+    {list.map(function(s,i){
+      var v = s.value ? String(s.value) : "";
+      var r = s.reps ? String(s.reps) : "";
+      var core = (v && r) ? v+"×"+r : (v || (r ? "×"+r : ""));
+      return <span key={i}>
+        {i>0 && <span className="hs-sep"> · </span>}
+        {core && <span className="num">{core}</span>}
+        {s.notes && <span className="hist-note">{" ("+s.notes+")"}</span>}
+      </span>;
+    })}
+    {type!=="time" && <span className="hs-unit">{" ק״ג"}</span>}
+  </span>;
+}
+
+// ---- Full detail of every previous session of one exercise (scrollable) ----
+function PrevPerfModal({exName, history, onClose}){
+  return <div className="modal-overlay" onClick={onClose}>
+    <div className="modal" onClick={function(e){ e.stopPropagation(); }}>
+      <div className="modal-head">
+        <h3>{exName}</h3>
+        <button className="modal-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="modal-body">
+        {!history.length
+          ? <div className="empty" style={{padding:"30px 10px"}}><div className="empty-icon">🗒️</div><div className="e-title">אין עדיין ביצוע קודם</div><div>אחרי שתתעדי את התרגיל הזה פעם אחת, כל הפרטים יופיעו כאן</div></div>
+          : history.map(function(h,i){
+              var plan = [h.variation, h.repRange ? "יעד "+h.repRange : "", h.notes].filter(Boolean).join(" · ");
+              var list = (h.sets||[]).filter(function(s){ return s.value||s.reps||s.notes; });
+              return <div className="pp-session" key={i}>
+                <div className="pp-date">
+                  {fmtDate(h.date)}
+                  {i===0 && <span className="pp-tag">האחרון</span>}
+                </div>
+                {plan && <div className="pp-plan">{plan}</div>}
+                {!list.length && <div className="pp-set"><span className="hist-none">—</span></div>}
+                {list.map(function(s,si){
+                  return <div className="pp-set" key={si}>
+                    <span className="pp-set-n">{si+1}</span>
+                    <span>
+                      {s.value && <span className="num">{String(s.value)}</span>}
+                      {s.value && h.type!=="time" && " ק״ג"}
+                      {s.reps && <span>{" × "}<span className="num">{String(s.reps)}</span></span>}
+                      {s.notes && <span className="hist-note">{"  — "+s.notes}</span>}
+                    </span>
+                  </div>;
+                })}
+              </div>;
+            })}
+      </div>
+    </div>
   </div>;
 }
 
