@@ -37,6 +37,7 @@ IntroToProEng/
 `window.LOMDA = { title, pass:70, screens:[ ... ] }`. כל מסך הוא אחד מ:
 
 - **מסך תוכן:** `{ act, eyebrow, title, blocks:[...], question:{...}|null, examNote? }`
+  (או `questions:[...]` — רצף שאלות שכל אחת נחשפת רק אחרי בדיקת הקודמת; ראו מסך 2)
 - **חוצץ מערכה:** `{ kind:'divider', act, num, title, sub }`
 - **מבחן:** `{ kind:'exam', eyebrow, title, intro, questions:[...] }`
 - **מסך ציון:** `{ kind:'result', act }`

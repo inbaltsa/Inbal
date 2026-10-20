@@ -365,12 +365,18 @@ function renderReveal(b,ctx,host){
   btn.addEventListener('click',function(){ shown=!shown; cont.hidden=!shown; btn.textContent=shown?b.hideLabel:b.showLabel; if(b.chartTrue&&ctx.learnChart)ctx.learnChart.setTrue(shown); });
 }
 
-function renderQuestion(q,host){
-  if(q.t==='mc') return renderMC(q,host);
-  if(q.t==='numeric') return renderNumeric(q,host);
-  if(q.t==='sort') return renderSort(q,host);
+function renderQuestion(q,host,onDone){
+  if(q.t==='mc') return renderMC(q,host,onDone);
+  if(q.t==='numeric') return renderNumeric(q,host,onDone);
+  if(q.t==='sort') return renderSort(q,host,onDone);
 }
-function renderMC(q,host){
+/* a sequence of questions: each one appears only after the previous one was checked */
+function renderQuestions(qs,host){
+  var boxes=qs.map(function(){var d=el('div');d.hidden=true;host.appendChild(d);return d;});
+  function show(i){if(i>=qs.length)return;boxes[i].hidden=false;renderQuestion(qs[i],boxes[i],function(){show(i+1);});if(i>0&&boxes[i].scrollIntoView)boxes[i].scrollIntoView({behavior:'smooth',block:'nearest'});}
+  show(0);
+}
+function renderMC(q,host,onDone){
   var box=el('div','quiz'); host.appendChild(box);
   box.appendChild(el('span','qtag practice','תרגול · לא נספר'));
   box.appendChild(el('p','q',q.q));
@@ -384,10 +390,10 @@ function renderMC(q,host){
     if(!picked){fb.hidden=false;fb.className='fb no';fb.textContent='בחרו תשובה לפני הבדיקה.';return;}
     var ok=picked===q.answer;
     opts.querySelectorAll('.opt').forEach(function(o){o.disabled=true;var k=o.dataset.k;if(k===q.answer)o.classList.add('correct');else if(k===picked)o.classList.add('wrong');o.classList.remove('sel');});
-    fb.hidden=false;fb.className='fb '+(ok?'ok':'no');fb.textContent=ok?q.fb.ok:q.fb.no;chk.disabled=true;
+    fb.hidden=false;fb.className='fb '+(ok?'ok':'no');fb.textContent=ok?q.fb.ok:q.fb.no;chk.disabled=true;if(onDone)onDone();
   });
 }
-function renderNumeric(q,host){
+function renderNumeric(q,host,onDone){
   var box=el('div','quiz'); host.appendChild(box);
   box.appendChild(el('span','qtag practice','תרגול · לא נספר'));
   box.appendChild(el('p','q',q.q));
@@ -399,10 +405,10 @@ function renderNumeric(q,host){
     if(inp.value===''){fb.hidden=false;fb.className='fb no';fb.textContent='הקלידו תשובה לפני הבדיקה.';return;}
     var v=parseFloat(inp.value),ok=!isNaN(v)&&Math.abs(v-q.answer)<=(q.tol||0.01);
     inp.disabled=true;inp.style.borderColor=ok?'var(--good)':'var(--bad)';
-    fb.hidden=false;fb.className='fb '+(ok?'ok':'no');fb.textContent=ok?q.fb.ok:q.fb.no;chk.disabled=true;
+    fb.hidden=false;fb.className='fb '+(ok?'ok':'no');fb.textContent=ok?q.fb.ok:q.fb.no;chk.disabled=true;if(onDone)onDone();
   });
 }
-function renderSort(q,host){
+function renderSort(q,host,onDone){
   var box=el('div','quiz'); host.appendChild(box);
   box.appendChild(el('span','qtag practice','תרגול · לא נספר'));
   var pool=el('div','cards'); box.appendChild(pool);
@@ -435,7 +441,7 @@ function renderSort(q,host){
     q.cards.forEach(function(c,i){var id='c'+i;var chip=box.querySelector('.chip[data-id="'+id+'"]');var ok=placed[id]===c.correct;if(ok)right++;chip.classList.add(ok?'ok':'no');chip.innerHTML=texts[id]+'<span class="v">'+(ok?'✓':'✗ — '+binLabel[c.correct])+'</span>';});
     fb.hidden=false;
     if(right===total){fb.className='fb ok';fb.textContent=q.fbOk;}else{fb.className='fb no';fb.textContent=q.fbNo.replace('{n}',right);}
-    chk.disabled=true;
+    chk.disabled=true;if(onDone)onDone();
   });
 }
 
@@ -509,6 +515,7 @@ function renderScreen(){
     if(s.title) sec.appendChild(el('h2',null,s.title));
     (s.blocks||[]).forEach(function(b){ renderBlock(b,ctx,sec); });
     if(s.question) renderQuestion(s.question,sec);
+    if(s.questions) renderQuestions(s.questions,sec);
     if(s.examNote) sec.appendChild(el('div','note examnote',s.examNote));
   }
   host.appendChild(sec);
