@@ -79,8 +79,8 @@ lines:[{who:'z'|'t',text,stage?} | {turn}]}` · `calibChart{mode}` ·
 3. **פרסום כ-Artifact** (לתצוגה חיה): פרסמו `index.html` עם `content.js`
    והתמונות כקבצים נלווים. *הערה:* ה-Artifact הקיים שייך ליוזר שבנה אותו —
    מיוזר אחר פשוט מפרסמים ארטיפקט חדש מהקבצים.
-4. **אריזת SCORM מחדש:** `zip` של `imsmanifest.xml + index.html + content.js + images/`
-   (ראו את `lomda_scorm.zip` הקיים כתבנית). ב-Moodle: פעילות "חבילת SCORM",
+4. **אריזת SCORM מחדש:** מריצים `./build_scorm.sh` (בונה את `lomda_scorm.zip` מתוך `lomda/`,
+   כולל manifest ותוספת doctype + UTF-8 ל-index.html, שבלעדיהם העברית עלולה להשתבש ב-Moodle). ב-Moodle: פעילות "חבילת SCORM",
    ותחת ציון — שיטה "הציון הגבוה ביותר".
 
 > ⚠️ **אל תמחקו את ה-try/catch בעטיפת ה-SCORM שב-index.html.** בלעדיו, גישה
