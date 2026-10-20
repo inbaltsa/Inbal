@@ -226,8 +226,13 @@ function cTrue(){var col='#1f7a8c',out=TRUE.filter(function(d){return d[0]>=10;}
   var path='M'+out.map(function(d){return X(d[0])+' '+Y(d[1]);}).join(' L ');
   var s='<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-dasharray="1 4" stroke-linecap="round" opacity=".85"/>';
   TRUE.forEach(function(d){s+='<circle cx="'+X(d[0])+'" cy="'+Y(d[1])+'" r="3.4" fill="'+col+'" opacity=".9"/>';});return s;}
+/* vertical guides where the two fits are compared, with each fit's value marked */
+function cFitReads(cs){var s='';cs.forEach(function(c){var az=0.0975*c+0.015,at=0.1075*c-0.04;
+  s+='<line x1="'+X(c)+'" y1="'+pBottom+'" x2="'+X(c)+'" y2="'+pT+'" stroke="#1f2a22" stroke-width="1" stroke-dasharray="3 4" opacity=".45"/>';
+  s+='<circle cx="'+X(c)+'" cy="'+Y(az)+'" r="4.5" fill="#a9792a" stroke="#fff" stroke-width="1.2"/><circle cx="'+X(c)+'" cy="'+Y(at)+'" r="4.5" fill="#2e7d32" stroke="#fff" stroke-width="1.2"/>';
+  s+='<text x="'+(X(c)-6)+'" y="'+(pT+12)+'" text-anchor="end" font-family="Assistant,sans-serif" font-weight="700" font-size="12"><tspan fill="#1f2a22">C='+c+':</tspan><tspan x="'+(X(c)-6)+'" dy="15" fill="#a9792a">'+az.toFixed(2)+'</tspan><tspan x="'+(X(c)-6)+'" dy="15" fill="#2e7d32">'+at.toFixed(2)+'</tspan></text>';});return s;}
 function cDraw(o){o=o||{};var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="גרף כיול: בליעה מול ריכוז">';
-  if(o.zones)s+=cZones();s+=cAxis();if(o.seg)s+=cSeg();if(o.allseg)s+=cAllSeg();if(o.twofits)s+=cFit([2,0.21],[10,0.99],'#a9792a')+cFit([4,0.39],[8,0.82],'#2e7d32');if(o.line)s+=cLine();s+=cPoints();if(o.trueData)s+=cTrue();
+  if(o.zones)s+=cZones();s+=cAxis();if(o.seg)s+=cSeg();if(o.allseg)s+=cAllSeg();if(o.twofits)s+=cFit([2,0.21],[10,0.99],'#a9792a')+cFit([4,0.39],[8,0.82],'#2e7d32')+cFitReads([5,9]);if(o.line)s+=cLine();s+=cPoints();if(o.trueData)s+=cTrue();
   if(o.markers){s+=cMarker(3,0.30,'#2e7d32','C=3 ✓');s+=cMarker(13,1.30,'#c0392b','C=13 ✗');}
   if(o.sliderC!=null){var c=o.sliderC,a=0.1*c,x=X(c),y=Y(a);s+='<line x1="'+pL+'" y1="'+y+'" x2="'+x+'" y2="'+y+'" stroke="#a9792a" stroke-width="1.3" stroke-dasharray="4 3"/><line x1="'+x+'" y1="'+pBottom+'" x2="'+x+'" y2="'+y+'" stroke="#a9792a" stroke-width="1.3" stroke-dasharray="4 3"/><circle cx="'+x+'" cy="'+y+'" r="6" fill="#a9792a" stroke="#fff" stroke-width="1.6"/>';}
   s+='</svg>';return s;}
@@ -253,6 +258,7 @@ function makeCalib(mode){
     inp.addEventListener('input',function(){st.sliderVal=parseFloat(inp.value);render();upd();});
     api.setStage=function(s){st.engStage=s;if(s===1){inp.min=2;inp.max=4;inp.value=3;st.sliderVal=3;sw.hidden=false;lbl.textContent='גררו לקרוא בליעה לריכוז בין 2 ל-4:';}else if(s===2){inp.min=0;inp.max=14;inp.value=13;st.sliderVal=13;sw.hidden=false;lbl.textContent='גררו לכל ריכוז — גם מחוץ לטווח שנמדד:';}render();upd();};
   }
+  if(mode==='twofits'){var lg=el('div','legend');lg.innerHTML='<span><i style="background:#a9792a"></i>הישר של זרובבל (הקצוות)</span><span><i style="background:#2e7d32"></i>הישר של תרצה (האמצעיות)</span>';wrap.appendChild(lg);}
   if(mode==='learn'){
     var leg=el('div','legend'); leg.innerHTML='<span><i style="background:rgba(78,125,58,.18)"></i>יש נתונים — אפשר לסמוך</span><span><i style="background:rgba(192,57,43,.14)"></i>אין נתונים — ניחוש</span><span class="trueLeg" hidden><i style="background:#1f7a8c;border-radius:50%"></i>ערכים אמיתיים</span>'; wrap.appendChild(leg);
     api.setTrue=function(b){st.showTrue=b;render();leg.querySelector('.trueLeg').hidden=!b;};
@@ -518,7 +524,7 @@ if(window.LOMDA&&window.LOMDA.title){document.getElementById('barTitle').textCon
 function updateNav(){
   var s=SCREENS[idx];
   prevBtn.hidden=(idx===0)||(s&&s.kind==='result');
-  nextBtn.hidden=(idx>=SCREENS.length-1)||(s&&(s.kind==='exam'||s.kind==='result'))||(ctx.needDialogue&&!ctx.dialogueDone);
+  nextBtn.hidden=(idx>=SCREENS.length-1)||(s&&(s.kind==='exam'||s.kind==='result'));
 }
 function renderScreen(){
   host.innerHTML=''; ctx={needDialogue:false,dialogueDone:false,engageChart:null,learnChart:null};
