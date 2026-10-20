@@ -284,6 +284,25 @@ function renderScatter(){
   var c=el('div','chart'); c.innerHTML='<div dir="ltr"><svg viewBox="0 0 '+ww+' '+hh+'" style="width:100%;height:auto;max-width:380px;margin:0 auto;display:block"><rect width="'+ww+'" height="'+hh+'" fill="#fff"/>'+d+'</svg></div><div class="readout">כל נקודה = מדידה אחת. יחד, הן ענן — לא קו מושלם.</div>';
   return c;
 }
+/* zoom on two neighbouring calibration points: "take the middle" vs reading the line */
+function renderLocalInterp(){
+  var w=460,h=280,l=52,r=18,t=18,bt=46,c0=3.5,c1=6.5,a0=0.3,a1=0.7;
+  function x(c){return l+(c-c0)/(c1-c0)*(w-l-r);} function y(a){return h-bt-(a-a0)/(a1-a0)*(h-t-bt);}
+  var F='font-family="Assistant,sans-serif"',s='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="אינטרפולציה בין שתי נקודות כיול">';
+  s+='<line x1="'+l+'" y1="'+y(a0)+'" x2="'+(w-r)+'" y2="'+y(a0)+'" stroke="#b9c4ad" stroke-width="1.5"/><line x1="'+l+'" y1="'+t+'" x2="'+l+'" y2="'+y(a0)+'" stroke="#b9c4ad" stroke-width="1.5"/>';
+  [4,4.5,5,5.5,6].forEach(function(c){s+='<line x1="'+x(c)+'" y1="'+y(a0)+'" x2="'+x(c)+'" y2="'+(y(a0)+4)+'" stroke="#b9c4ad"/><text x="'+x(c)+'" y="'+(y(a0)+17)+'" text-anchor="middle" '+F+' font-size="11" fill="#5c6b5e">'+c+'</text>';});
+  [0.4,0.5,0.6,0.7].forEach(function(a){s+='<line x1="'+(l-4)+'" y1="'+y(a)+'" x2="'+l+'" y2="'+y(a)+'" stroke="#b9c4ad"/><text x="'+(l-7)+'" y="'+(y(a)+4)+'" text-anchor="end" '+F+' font-size="11" fill="#5c6b5e">'+a.toFixed(1)+'</text>';});
+  s+='<text x="'+((l+w-r)/2)+'" y="'+(h-6)+'" text-anchor="middle" '+F+' font-size="12" fill="#1f2a22">ריכוז C</text><text transform="translate(14,'+((t+y(a0))/2)+') rotate(-90)" text-anchor="middle" '+F+' font-size="12" fill="#1f2a22">בליעה A</text>';
+  s+='<line x1="'+x(5)+'" y1="'+y(a0)+'" x2="'+x(5)+'" y2="'+t+'" stroke="#a9792a" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/><text x="'+x(5)+'" y="'+(t+10)+'" text-anchor="middle" direction="rtl" '+F+' font-size="11" fill="#a9792a">האמצע: C=5</text>';
+  s+='<line x1="'+x(5.5)+'" y1="'+y(a0)+'" x2="'+x(5.5)+'" y2="'+y(0.5475)+'" stroke="#1f2a22" stroke-width="1.2" stroke-dasharray="4 3" opacity=".6"/>';
+  s+='<line x1="'+x(4)+'" y1="'+y(0.39)+'" x2="'+x(6)+'" y2="'+y(0.60)+'" stroke="#4e7d3a" stroke-width="2.4"/>';
+  s+='<circle cx="'+x(4)+'" cy="'+y(0.39)+'" r="5" fill="#3a5f2b" stroke="#fff" stroke-width="1.3"/><circle cx="'+x(6)+'" cy="'+y(0.60)+'" r="5" fill="#3a5f2b" stroke="#fff" stroke-width="1.3"/>';
+  s+='<text x="'+x(4)+'" y="'+(y(0.39)+20)+'" text-anchor="middle" '+F+' font-size="11.5" fill="#3a5f2b">(4, 0.39)</text><text x="'+x(6)+'" y="'+(y(0.60)-12)+'" text-anchor="middle" '+F+' font-size="11.5" fill="#3a5f2b">(6, 0.60)</text>';
+  s+='<circle cx="'+x(5.5)+'" cy="'+y(0.495)+'" r="5.5" fill="#a9792a" stroke="#fff" stroke-width="1.4"/><text x="'+(x(5.5)+10)+'" y="'+(y(0.495)+16)+'" text-anchor="end" direction="rtl" '+F+' font-weight="700" font-size="12" fill="#a9792a">זרובבל: האמצע ≈ 0.50 ✗</text>';
+  s+='<circle cx="'+x(5.5)+'" cy="'+y(0.5475)+'" r="5.5" fill="#2e7d32" stroke="#fff" stroke-width="1.4"/><text x="'+(x(5.5)-10)+'" y="'+(y(0.5475)-8)+'" text-anchor="start" direction="rtl" '+F+' font-weight="700" font-size="12" fill="#2e7d32">על הקו ≈ 0.55 ✓</text>';
+  var c=el('div','chart'); c.innerHTML='<div dir="ltr">'+s+'</svg></div><div class="readout">הגדלה של הקטע בין C=4 ל-C=6. ב-C=5.5 הערך על הקו גבוה מ"האמצע".</div>';
+  return c;
+}
 function renderTree(b){
   var wrap=el('div','tree');
   wrap.appendChild(el('div','tree-q',b.q1));
@@ -328,6 +347,7 @@ function renderBlock(b,ctx,host){
     case 'dialogue': renderDialogue(b,ctx,host); break;
     case 'reveal': renderReveal(b,ctx,host); break;
     case 'scatter': host.appendChild(renderScatter()); break;
+    case 'localInterp': host.appendChild(renderLocalInterp()); break;
     case 'figrow': var fr=el('div','figrow'); b.items.forEach(function(it){var f=el('figure');f.innerHTML='<img src="'+it.src+'" alt="'+(it.alt||'')+'">'+(it.cap?'<figcaption>'+it.cap+'</figcaption>':'');fr.appendChild(f);}); host.appendChild(fr); break;
     case 'comparefits': var frc=el('div','figrow');
       var fc1=el('figure'); fc1.innerHTML='<div class="chart" dir="ltr">'+miniChart(DATA,'#3a5f2b')+'</div><figcaption>נתונים נקיים — הנקודות כמעט על הקו</figcaption>';
